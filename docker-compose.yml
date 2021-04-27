@@ -1,0 +1,36 @@
+version: "3.9"
+volumes:
+  my-volume:
+    external: true
+networks:
+  mt-network:
+    driver: bridge    
+services:
+  mydb:
+    image: mysql
+    container_name: forumsdb
+    ports:
+      - 4000:3306
+    security_opt:
+      - seccomp:unconfined  
+    networks:
+      - mt-network      
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_DATABASE=forumsdb
+    volumes:
+      - my-volume:/var/lib/mysql
+  backend:
+    build: .
+    container_name: back_end
+    ports:
+      - 8070:8070  
+    networks:
+      - mt-network
+    environment:
+      - SPRING.DATASOURCE.USERNAME=root
+      - SPRING.DATASOURCE.PASSWORD=
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mydb:3306/forumsdb
+      - MYSQL_DATABASE=forumsdb   
+    depends_on:
+      - mydb 
