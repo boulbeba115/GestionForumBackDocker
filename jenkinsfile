@@ -1,0 +1,32 @@
+pipeline{
+agent any
+tools {
+jdk "JAVA"
+maven 'maven'
+}
+environment {
+REPO_URL= 'https://github.com/boulbeba115/GestionForumBackDocker.git'
+}
+stages {
+stage ('SCM'){
+steps{
+git credentialsId: 'GIT-CREDENTIALS',
+url: 'https://github.com/boulbeba115/GestionForumBackDocker.git'
+}
+}
+stage ('Maven Build'){
+steps{
+sh "mvn clean package -Dmaven.test.skip=true -X"
+}
+}
+stage ('deploy'){
+steps{
+sh '''
+cp target/ForumServerSide-0.0.1-SNAPSHOT.jar .
+docker-compose down
+docker-compose build
+docker-compose up -d '''
+}
+}
+}
+}
