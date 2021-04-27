@@ -28,5 +28,15 @@ docker-compose build
 docker-compose up -d '''
 }
 }
+stage ('dockerhub push image'){
+    steps{
+        sh '''
+        docker build -t gestionforumback:v1 .
+        docker tag gestionforumback:v1 boulbeba115/gestion-forum-back:v1.0
+        docker login -u boulbeba115 -p 21404271fm
+        docker push boulbeba115/gestion-forum-back:v1.0
+        '''
+}
+}
 }
 }
